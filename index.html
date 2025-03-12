@@ -224,8 +224,6 @@
         }
 
     </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1161949479507139"
-     crossorigin="anonymous"></script>
 </head>
 <body class="animate-fade-in">
 
@@ -272,49 +270,62 @@
                 return;
             }
 
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    let reminderId = setInterval(() => {
-                        new Notification("Reminder!", { body: message });
-                    }, time);
-
-                    let reminderObj = { id: reminderId, message: message };
-                    reminders.push(reminderObj);
-                    displayReminders();
-                }
-            });
+            // Request notification permission if it's not already granted
+            if (Notification.permission === "default") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        createReminder(message, time);
+                    } else {
+                        alert("You need to enable notifications to set a reminder.");
+                    }
+                });
+            } else if (Notification.permission === "granted") {
+                createReminder(message, time);
+            } else {
+                alert("You need to enable notifications to set a reminder.");
+            }
         }
 
-        function displayReminders() {
-            let list = document.getElementById("reminderList");
-            list.innerHTML = ""; 
+        function createReminder(message, time) {
+            let reminderId = setInterval(() => {
+                new Notification(message);
+            }, time);
 
-            reminders.forEach((reminder, index) => {
-                let li = document.createElement("li");
-                li.classList.add("reminder-item");
-                li.innerHTML = `${reminder.message} <button onclick="removeReminder(${index})">X</button>`;
-                list.appendChild(li);
-            });
-        }
+            reminders.push({ message, time, reminderId });
 
-        function removeReminder(index) {
-            let reminder = reminders[index];
-            clearInterval(reminder.id);
-            reminders.splice(index, 1);
-            displayReminders();
-        }
+            let reminderList = document.getElementById("reminderList");
+            let listItem = document.createElement("li");
+            listItem.classList.add("reminder-item");
 
-        function copyToClipboard() {
-            const url = 'https://www.alarmreminders.com';
-            navigator.clipboard.writeText(url).then(() => {
-                alert("Link copied to clipboard!");
-            });
+            let text = document.createElement("span");
+            text.textContent = message;
+
+            let cancelButton = document.createElement("button");
+            cancelButton.textContent = "X";
+            cancelButton.onclick = function () {
+                clearInterval(reminderId);
+                reminderList.removeChild(listItem);
+            };
+
+            listItem.appendChild(text);
+            listItem.appendChild(cancelButton);
+            reminderList.appendChild(listItem);
         }
 
         function toggleMode() {
             document.body.classList.toggle("dark-mode");
-            let button = document.querySelector(".mode-toggle");
-            button.textContent = document.body.classList.contains("dark-mode") ? "🌙 Light Mode" : "🌙 Dark Mode";
+            let modeButton = document.querySelector(".mode-toggle");
+            if (document.body.classList.contains("dark-mode")) {
+                modeButton.textContent = "🌙 Light Mode";
+            } else {
+                modeButton.textContent = "🌙 Dark Mode";
+            }
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText('www.alarmreminders.com').then(() => {
+                alert("Link copied to clipboard!");
+            });
         }
     </script>
 
