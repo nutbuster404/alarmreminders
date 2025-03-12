@@ -224,6 +224,8 @@
         }
 
     </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1161949479507139"
+     crossorigin="anonymous"></script>
 </head>
 <body class="animate-fade-in">
 
@@ -270,61 +272,55 @@
                 return;
             }
 
-            // Request notification permission if it's not already granted
-            if (Notification.permission === "default") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        createReminder(message, time);
-                    } else {
-                        alert("You need to enable notifications to set a reminder.");
-                    }
-                });
-            } else if (Notification.permission === "granted") {
-                createReminder(message, time);
-            } else {
-                alert("You need to enable notifications to set a reminder.");
-            }
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    let reminderId = setInterval(() => {
+                        new Notification("Reminder!", { body: message });
+                    }, time);
+
+                    let reminderObj = { id: reminderId, message: message };
+                    reminders.push(reminderObj);
+                    displayReminders();
+                }
+            });
         }
 
-        function createReminder(message, time) {
-            let reminderId = setInterval(() => {
-                new Notification(message);
-            }, time);
+        function displayReminders() {
+            let list = document.getElementById("reminderList");
+            list.innerHTML = ""; 
 
-            reminders.push({ message, time, reminderId });
+            reminders.forEach((reminder, index) => {
+                let li = document.createElement("li");
+                li.className = "reminder-item";
+                li.innerHTML = `
+                    ${reminder.message}
+                    <button onclick="cancelReminder(${index})">X</button>
+                `;
+                list.appendChild(li);
+            });
+        }
 
-            let reminderList = document.getElementById("reminderList");
-            let listItem = document.createElement("li");
-            listItem.classList.add("reminder-item");
-
-            let text = document.createElement("span");
-            text.textContent = message;
-
-            let cancelButton = document.createElement("button");
-            cancelButton.textContent = "X";
-            cancelButton.onclick = function () {
-                clearInterval(reminderId);
-                reminderList.removeChild(listItem);
-            };
-
-            listItem.appendChild(text);
-            listItem.appendChild(cancelButton);
-            reminderList.appendChild(listItem);
+        function cancelReminder(index) {
+            clearInterval(reminders[index].id); 
+            reminders.splice(index, 1); 
+            displayReminders(); 
         }
 
         function toggleMode() {
             document.body.classList.toggle("dark-mode");
             let modeButton = document.querySelector(".mode-toggle");
             if (document.body.classList.contains("dark-mode")) {
-                modeButton.textContent = "🌙 Light Mode";
+                modeButton.innerHTML = "☀️ Light Mode";
             } else {
-                modeButton.textContent = "🌙 Dark Mode";
+                modeButton.innerHTML = "🌙 Dark Mode";
             }
         }
 
         function copyToClipboard() {
-            navigator.clipboard.writeText('www.alarmreminders.com').then(() => {
-                alert("Link copied to clipboard!");
+            navigator.clipboard.writeText("www.alarmreminders.com").then(() => {
+                alert("URL copied to clipboard!");
+            }).catch(err => {
+                alert("Failed to copy the URL!");
             });
         }
     </script>
