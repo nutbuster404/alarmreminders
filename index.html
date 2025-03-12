@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminder App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            padding: 40px;
+            margin: 0;
+            background: linear-gradient(135deg, #f1f2f6, #dfe6e9);
+            background-size: cover;
+            color: #333;
+            transition: background 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #2d3436;
+            margin-bottom: 30px;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input, select, button {
+            padding: 15px;
+            font-size: 18px;
+            margin: 15px;
+            border-radius: 12px;
+            border: 1px solid #dfe6e9;
+            width: 80%;
+            max-width: 400px;
+            transition: all 0.3s ease-in-out;
+            background: #ffffff;
+        }
+
+        /* Make the text inside input visible */
+        input::placeholder {
+            color: #aaa;
+        }
+
+        input:focus, select:focus, button:focus {
+            outline: none;
+            border-color: #0984e3;
+            box-shadow: 0 0 8px rgba(9, 132, 227, 0.6);
+        }
+
+        button {
+            background-color: #0984e3;
+            color: white;
+            cursor: pointer;
+            width: 80%;
+            max-width: 420px;
+            margin-top: 20px;
+            font-weight: 700;
+            border-radius: 30px;
+            transition: background-color 0.3s ease-in-out;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #74b9ff;
+            transform: translateY(-3px);
+        }
+
+        button:active {
+            transform: translateY(2px);
+        }
+
+        .mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 18px;
+            font-size: 16px;
+            border: none;
+            background-color: #0984e3;
+            color: white;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: background-color 0.3s ease;
+        }
+
+        .mode-toggle:hover {
+            background-color: #74b9ff;
+        }
+
+        .mode-toggle:active {
+            transform: translateY(2px);
+        }
+
+        /* Dark Mode */
+        .dark-mode {
+            background: #2d3436;
+            color: white;
+        }
+
+        .dark-mode input, .dark-mode select, .dark-mode button {
+            background: #2d3436;
+            color: white;
+            border: 1px solid #636e72;
+        }
+
+        .dark-mode h1 {
+            color: #74b9ff;
+        }
+
+        /* Reminder List */
+        #reminderList {
+            margin-top: 50px;
+            list-style: none;
+            padding: 0;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .reminder-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 20px;
+            margin: 15px 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            border-left: 8px solid #0984e3;
+        }
+
+        .reminder-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .reminder-item button {
+            background: #e74c3c;
+            border: none;
+            padding: 8px 15px;
+            font-size: 14px;
+            color: white;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .reminder-item button:hover {
+            background-color: #e94f5f;
+        }
+
+        .divider {
+            border-top: 2px solid #0984e3;
+            margin: 50px auto;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        /* Wide Rectangle */
+        .wide-rectangle {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #0984e3;
+            color: white;
+            font-size: 18px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 30px;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .wide-rectangle:hover {
+            background-color: #74b9ff;
+            transform: translateY(-5px);
+        }
+
+        .wide-rectangle:active {
+            transform: translateY(5px);
+        }
+
+        .small-text {
+            font-size: 13px;
+            color: #636e72;
+            margin-top: 20px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Adding a subtle background texture */
+        body {
+            background: linear-gradient(135deg, #f1f2f6, #dfe6e9), url('https://www.transparenttextures.com/patterns/geometry.png');
+            background-size: cover;
+        }
+
+        /* Animations */
+        .animate-fade-in {
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Task Input Box Fix (Dark Mode) */
+        .dark-mode input, .dark-mode select {
+            background: #636e72;
+            color: white;
+        }
+
+    </style>
+</head>
+<body class="animate-fade-in">
+
+    <button class="mode-toggle" onclick="toggleMode()">🌙 Dark Mode</button>
+
+    <h1>Set a Reminder</h1>
+
+    <input type="text" id="reminderText" placeholder="Enter reminder here..." autofocus>
+    
+    <select id="reminderTime">
+        <option value="60000">Every 1 min</option>
+        <option value="3600000">Every 1 hour</option>
+        <option value="86400000">Every day</option>
+        <option value="900000">Every 15 minutes</option>
+        <option value="1800000">Every 30 minutes</option>
+    </select>
+
+    <button onclick="setReminder()">Set Reminder</button>
+
+    <div class="divider"></div>
+
+    <ul id="reminderList"></ul>
+
+    <div class="wide-rectangle" onclick="copyToClipboard()">www.alarmreminders.com</div>
+
+    <div class="small-text">
+        Set a reminder, choose how often you'd like to be reminded, and click "Set Reminder" to receive notifications. You can cancel reminders by clicking the "X" on them.
+    </div>
+
+    <script>
+        let reminders = [];
+
+        function setReminder() {
+            let message = document.getElementById("reminderText").value;
+            let time = document.getElementById("reminderTime").value;
+
+            if (!message.trim()) {
+                alert("Please enter a reminder message.");
+                return;
+            }
+
+            if (!("Notification" in window)) {
+                alert("This browser does not support notifications.");
+                return;
+            }
+
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    let reminderId = setInterval(() => {
+                        new Notification("Reminder!", { body: message });
+                    }, time);
+
+                    let reminderObj = { id: reminderId, message: message };
+                    reminders.push(reminderObj);
+                    displayReminders();
+                }
+            });
+        }
+
+        function displayReminders() {
+            let list = document.getElementById("reminderList");
+            list.innerHTML = ""; 
+
+            reminders.forEach((reminder, index) => {
+                let li = document.createElement("li");
+                li.className = "reminder-item";
+                li.innerHTML = `
+                    ${reminder.message}
+                    <button onclick="cancelReminder(${index})">X</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function cancelReminder(index) {
+            clearInterval(reminders[index].id); 
+            reminders.splice(index, 1); 
+            displayReminders(); 
+        }
+
+        function toggleMode() {
+            document.body.classList.toggle("dark-mode");
+            let modeButton = document.querySelector(".mode-toggle");
+            if (document.body.classList.contains("dark-mode")) {
+                modeButton.innerHTML = "☀️ Light Mode";
+            } else {
+                modeButton.innerHTML = "🌙 Dark Mode";
+            }
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText("www.alarmreminders.com").then(() => {
+                alert("URL copied to clipboard!");
+            }).catch(err => {
+                alert("Failed to copy the URL!");
+            });
+        }
+    </script>
+
+</body>
+</html>
